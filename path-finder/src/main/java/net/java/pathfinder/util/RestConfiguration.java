@@ -15,11 +15,10 @@
  When distributing the software, include this License Header Notice in each
  file and include the License file at packager/legal/LICENSE.txt.
  */
-package net.java.pathfinder.internal;
+package net.java.pathfinder.util;
 
 import java.util.Set;
 import javax.ws.rs.core.Application;
-import net.java.pathfinder.api.GraphTraversalService;
 
 /**
  *

@@ -1,6 +1,7 @@
 package net.java.pathfinder.api;
 
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -16,13 +17,14 @@ import net.java.pathfinder.internal.GraphDao;
 @Path("/graph-traversal")
 public class GraphTraversalService {
 
+    private static final Logger logger
+            = Logger.getLogger(GraphTraversalService.class.getCanonicalName());
+
     @Inject
     private GraphDao dao;
     private final Random random = new Random();
     private static final long ONE_MIN_MS = 1000 * 60;
     private static final long ONE_DAY_MS = ONE_MIN_MS * 60 * 24;
-    
-    Logger logger = Logger.getLogger(GraphTraversalService.class.getCanonicalName());
 
     @GET
     @Path("/shortest-path")
@@ -75,8 +77,9 @@ public class GraphTraversalService {
 
             candidates.add(new TransitPath(transitEdges));
         }
-        
-       logger.info("Path Finder Service called for " + originUnLocode + " to " + destinationUnLocode);
+
+        logger.log(Level.INFO, "Path finder service called for {0} to {1}",
+                new Object[]{originUnLocode, destinationUnLocode});
 
         return candidates;
     }

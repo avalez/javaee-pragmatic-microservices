@@ -8,32 +8,32 @@
         <param-name>javax.faces.PROJECT_STAGE</param-name>
         <param-value>Development</param-value>
     </context-param>
-    
+
     <context-param>
-        <param-name>primefaces.THEME</param-name>  
+        <param-name>primefaces.THEME</param-name>
         <param-value>ui-lightness</param-value>
     </context-param>
-    
+
     <servlet>
         <servlet-name>Faces Servlet</servlet-name>
         <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    
+
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-    
+
     <session-config>
         <session-timeout>12</session-timeout>
     </session-config>
-    
+
     <welcome-file-list>
         <welcome-file>index.xhtml</welcome-file>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
-        
+
     <!-- Application level resource dependencies like JMS queues and data
     sources are still good candidates for XML -->
     <!-- Defining these at the application server level instead of here
@@ -42,6 +42,10 @@
         <name>java:global/jdbc/CargoTrackerDatabase</name>
         <class-name>org.apache.derby.jdbc.EmbeddedDriver</class-name>
         <url>jdbc:derby:${webapp.databaseTempDir}/cargo-tracker-database;create=true</url>
+        <property>
+            <name>weblogic.GlobalTransactionsProtocol</name>
+            <value>EmulateTwoPhaseCommit</value>
+        </property>
     </data-source>
     <jms-destination>
         <name>java:global/jms/CargoHandledQueue</name>

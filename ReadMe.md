@@ -1,76 +1,64 @@
-Cargo Tracker and Micro-services
-================================
+Down-to-Earth Microservices using Java EE
+=========================================
+This project demonstrates developing reasonable microservices appropriate for
+most ordinary blue collar IT organizations using nothing but vanilla Java EE 
+and simple, fast deploying thin war files. The project is used as a demo for 
+[this] (http://www.slideshare.net/reza_rahman/javaee-microservices) talk. A
+video for the talk can be found [here](https://www.youtube.com/watch?v=bS6zKgMb8So).
 
-This project takes the original [cargo tracker](https://cargotracker.java.net/) 
-application which is, in the terminology of microservices a ***monolith***, and 
-splits out the pathfinder service as a separate micro service. 
+The project is derived from the [Cargo Tracker](https://cargotracker.java.net/)
+Java EE blue prints project. Although logically two separate applications that 
+project is deliberately structured as a single war for simplicity. This project
+breaks the code up into two separate wars. The larger war represents the Cargo Tracker
+application. In microservices parlance the Cargo Tracker application is a so
+called monolith. The smaller war file represents the Path Finder microservice. Cargo
+Tracker uses the smaller Path Finder service.
 
-PathFinder Microservice
------------------------
+This project uses WebLogic 12.2.1. The code can be run in any Java EE 7 capable
+environment. Indeed the Cargo Tracker project uses GlassFish. You can even run the
+smaller Path Finder microservice on a fat jar solution like Payara Micro. The project 
+uses NetBeans but you can use any Maven capable IDE. 
 
-The Pathfinder micro service was originally embedded into the core Cargo tracker
-application. In this project it is separated out as an individual RESTful service
-with its own maven project *pathfinder*.
-
-The Pathfinder application can then be run on Payara Micro using the command;
-
-```shell
-java -jar payara-micro.jar --deploy pathfinder-1.0-SNAPSHOT.war --autoBindHttp
-```
-
-This can also be run multiple times to "scale out" the micro service. 
-
-Load balancing configuration snippets for Nginx and HAProxy are provided at the 
-root of the project to show how you would configure these tools to integrate
-the cargo tracker application and the pathfinder micro service into a functional
-service.
-
-CargoTracker Monolith
----------------------
-
-The *cargo-monolith* maven project is the original Cargo Tracker application with
-the path finder functionality extracted and removed. 
-
-To ensure the application knows the URL of the path finder microservice the URL 
-must be specified. There are two options for this;
-* You must edit the ejb-jar.xml in the WEB-INF directory and set below to the correct URL
-```xml
-            <env-entry>
-                <env-entry-name>graphTraversalUrl</env-entry-name>
-                <env-entry-type>java.lang.String</env-entry-type>
-                <env-entry-value>http://127.0.0.1/pathfinder/rest/graph-traversal/shortest-path</env-entry-value>
-            </env-entry>
-```
-
-Alternatively the ExternalRoutingService EJB can also retrieve the URL directly from JNDI.
-If you bind the URL to JNDI at /graphTraversalUrlJNDI
-
-This can be done in GlassFish using the asadmin command
-```shell
-create-custom-resource --restype java.lang.String --factoryclass org.glassfish.resources.custom.factory.PrimitivesAndStringFactory --property value="http\:\/\/127.0.0.1\/pathfinder\/rest\/graph-traversal\/shortest-path" graphTraversalUrlJNDI
- ```
-
-Once this has been configured the cargo-tracker.war file can be deployed to GlassFish
-
-Running the Application
------------------------
-
-To run the application you must run GlassFish or Payara Server and deploy the 
-configured cargo-tracker application as described above. You must also run one or
-more Payara Micro instances. Payara Micro automatically binds to the next available
-http port starting from 8080 when using the command line above.
-
-Once you have the application deployed and Payara Micro running cargo tracker can
- be accessed via http://127.0.0.1/cargo-tracker/.
-To see the Pathfinder micro service in action navigate to;
-* Administration Interface
-* Book
-* run through the booking wizard.
-
-In your Payara Micro log you will see a message like below when the service is called;
-```shell
-[2015-09-30T15:30:55.051+0100] [Payara 4.1] [INFO] [] [net.java.pathfinder.api.GraphTraversalService] [tid: _ThreadID=23 _ThreadName=http-listener(5)] [timeMillis: 1443623455051] [levelValue: 800] Path Finder Service called for USNYC to USDAL
-```
-If you are using the nginx snippet or haproxy snippet you should see load balancing between
-the Payara Micro instances. Demonstrating how easy it is to scale out the microservice.
-
+Setup
+-----
+* Download this project somewhere into your file system, probably as a zip file 
+(and extract it).
+* Make sure you have JDK 8+ installed.
+* Please install NetBeans 8+. Make sure to download the Java EE edition.
+* Download WebLogic 12.2.1 from [here]
+(http://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html). 
+You will need to download the Generic installer. Unfortunately you will not be able to 
+use the quick installer due to a bug. In the future it may be possible to use the quick
+installer. You can use your downloaded copy of WebLogic for free using at OTN license.
+* Please unzip the zip file. You should find a jar file that is the Graphical installer for
+WebLogic.
+* Using the JDK, run java -jar fmw_12.2.1.0.0_wls.jar. Make sure you are running with
+admin rights.
+* You will accept all defaults in GUI except for choosing an installation type. Please
+make sure you choose installation type "Complete with Examples". This will make setup for
+this project far simpler for you. 
+* The installer will launch the domain configuration wizard for you by default. You will
+accept all the defaults here as well. When prompted make to enter the username/password as
+weblogic/weblogic1.
+Start NetBeans. There are two separate Maven projects in the zip you downloaded - cargo-tracker
+and path-finder. They are both in their own  directories under the root directory. You need
+to open and build both projects in NetBeans.
+* You now need to setup WebLogic in NetBeans. You do that by going to Services -> Servers -> 
+Add Server -> Oracle WebLogic. Enter the location of the "wlserver" directory and the username/password
+specified during installation. The wlserver directory should be somewhere under c:\oracle\middleware\.
+You will choose all the defaults here otherwise.
+* You will need to specify that both projects will run with WebLogic. You do that by going to 
+Project -> Properties -> Run -> Server and choosing WebLogic.
+* When ready, you will first run the path-finder application (Project -> Run). Wait for the project to
+deploy and run. Then you will similarly run the Cargo Tracker application. In both cases, NetBeans
+should automatically open a browser window with the running application.
+* You need to book and route a cargo. Please take a look at the video for the talk on how to do this or
+look through the readme of the original Cargo Tracker application. The Path Finder service is used for
+routing by Cargo Tracker.
+* In this demo both Cargo Tracker and Path Finder run on the same WebLogic domain. If you want you can 
+run the two wars on two different servers, two different WebLogic domains or two different WebLogic
+partitions. Just make the appropriate changes in [ejb-jar.xml for Cargo Tracker]
+(cargo-tracker/src/main/webapp/WEB-INF/ejb-jar.xml) to point it to the location of the Path Finder
+service. Most servers will also allow you to change the JNDI entry value at runtime through
+GUI administrative tools without any changes to the war. You can also use load balancers and DNS
+with the two applications if you like to add greater flexibility or fault tolerance.

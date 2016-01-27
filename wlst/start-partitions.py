@@ -1,4 +1,4 @@
-connect("admin", "admin123", "t3://localhost:7001")
+connect("weblogic", "welcome1", "t3://localhost:7001")
 
 domainRuntime()
 cd('/')
